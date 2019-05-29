@@ -11,38 +11,52 @@ class Twitt {
 
   // extractTweetFromId(id: String) => <Promise>
   extractTweetFromId(id) {
-    // console.log("nxt: ", id);
     return this.T.get('statuses/show/:id', { id });;
   }
 
+  // extractTextFromTweet(tweet: Object) => <String>
   extractTextFromTweet(tweet) {
     return tweet.text;
   }
 
-  streamTweets() {
-    const s = this.T.stream('statuses/filter', { track: '@bbamii_' });
+  // streamTweets(filter: Object) => void
+  // <process>
+  // This function starts a streaming service
+  streamTweets(filter) {
+    const s = this.T.stream('statuses/filter', filter);
 
     s.on('tweet', (tweet) => {
       this.userid = tweet.user.id_str;
-      this.compute(tweet);
+      this.getThread(
+        tweet,
+        this.sendDM(
+            this.tweetsArray.reverse().map(this.extractTextFromTweet).join('\n\n---\n\n'),
+            this.userid
+          )
+          .then(e => console.log(`DM to user ${this.userid} has been sent!`))
+          .catch(e => console.error(e))
+          .finally(e => this.tweetsArray = [])
+      );
     })
   }
 
-  compute(tweet) {
+  // getThread(tweet: Object, cb: Function) => void
+  // This function gets the parent's tweet from the 
+  // TWEET variable, & calls a callback <cb> function
+  // when it's done.
+  getThread(tweet, cb) {
     this.tweetsArray.push(tweet);
     if (tweet.in_reply_to_status_id_str !== null) {
       this.extractTweetFromId(tweet.in_reply_to_status_id_str)
-        .then(e => this.compute(e.data))
+        .then(e => this.getThread(e.data))
         .catch(e => console.error(e));
     } else {
-      this.sendDM(this.finishComputation())
-        .then(e => console.log(`DM to user ${this.userid} has been sent!`))
-        .catch(e => console.error(e))
-        .finally(e => this.tweetsArray = []);
+      cb;
     }
   }
 
-  sendDM(data) {
+  // sendDM(data: String, id: String) => <Promise>
+  sendDM(data, id) {
     return this.T.post(
       'direct_messages/events/new',
       {
@@ -50,7 +64,7 @@ class Twitt {
           "type": "message_create",
           "message_create": {
             "target": {
-              "recipient_id": this.userid,
+              "recipient_id": id,
             },
             "message_data": {
               "text": data
@@ -61,12 +75,10 @@ class Twitt {
     )
   }
 
-  finishComputation() {
-    return this
-      .tweetsArray
-      .reverse()
-      .map(this.extractTextFromTweet)
-      .join('\n\n---\n\n');
+  // computeTweetTree(data: Arrat, cb: Function) => void;
+
+  computeTweetTree(data, cb) {
+    cb(data);
   }
 }
 

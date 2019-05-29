@@ -1,29 +1,16 @@
-/* const http = require('http');
-const PORT = process.env.PORT_NO || 3000;
+var Twit = require('./new_twit');
+require('dotenv').config();
 
-const a = http.createServer()
+const config = {
+  consumer_key: process.env.API_KEY,
+  consumer_secret: process.env.API_KEY_SECRET,
+  access_token: process.env.ACCESS_TOKEN,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET,
+  timeout_ms: 60 * 1000,
+  strictSSL: true
+};
 
-a.listen(PORT);
+var test = new Twit(config);
 
-a.on('listening', (err, res) => {
-  console.log("listening on port", PORT);
-  console.log("a:", a);
-  console.log("Extra params:", err);
-  console.log("Extra params 2:", res);
-});
+test.streamTweets({ track: '@bbamii_' });
 
- */
-
- // Using Express
-var express = require("express");
-var path = require("path");
-
-const app = express();
-
-app.use('/', (req, res) => {
-  res.send(200);
-})
-
-app.listen(3000, () => {
-  console.log("listening on something");
-})
