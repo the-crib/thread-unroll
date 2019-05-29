@@ -2,13 +2,13 @@
   "name": "thread-unroll",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node lib/index.js"
   },
   "keywords": [],
   "author": "",
