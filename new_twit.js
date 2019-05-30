@@ -12,7 +12,7 @@ class Twitt {
   // extractTweetFromId(id: String) => <Promise>
   extractTweetFromId(id) {
     // console.log("nxt: ", id);
-    return this.T.get('statuses/show/:id', { id });;
+    return this.T.get('statuses/show/:id', { id });
   }
 
   extractTextFromTweet(tweet) {
